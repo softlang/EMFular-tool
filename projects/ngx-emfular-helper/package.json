@@ -2,7 +2,7 @@
   "name": "ngx-emfular-helper",
   "version": "0.0.1",
   "description": "Small Angular library with helper schematics for EMFular, currently alerting and io facilities",
-  "keywords": ["EMFular","Angular", "IO"],
+  "keywords": ["EMFular","Angular", "IO", "alert"],
   "author": {
     "name": "Susanne Göbel",
     "email": "goebel@uni-koblenz.de"
