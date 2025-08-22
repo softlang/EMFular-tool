@@ -98,5 +98,5 @@ export class IoService {
 
     reader.readAsText(svgBlob);
   }
-  
+
 }
