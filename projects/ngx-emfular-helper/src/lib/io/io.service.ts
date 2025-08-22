@@ -45,10 +45,15 @@ export class IoService {
 
   saveSvgAsPng(svgContent: SVGElement, title: string) {
     const contentBlob = this.cleanCopySVGAsBlob(svgContent);
-    this.convertSvgBlobToPngAndDownload(contentBlob, title+'.png');
+    this.convertSvgBlobToPngOrJpegAndDownload(contentBlob, title, true);
   }
 
-  private convertSvgBlobToPngAndDownload(svgBlob: Blob, fileName: string = 'image.png'): void {
+  saveSvgAsJpeg(svgContent: SVGElement, title: string) {
+    const contentBlob = this.cleanCopySVGAsBlob(svgContent);
+    this.convertSvgBlobToPngOrJpegAndDownload(contentBlob, title, false);
+  }
+
+  private convertSvgBlobToPngOrJpegAndDownload(svgBlob: Blob, title: string, usePng?: boolean): void {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -63,29 +68,8 @@ export class IoService {
       img.src = `data:image/svg+xml;base64,${svgBase64}`;
 
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          console.error('Canvas context not available');
-          return;
-        }
-
-        ctx.fillStyle = '#ffffff'; // white
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-
-        canvas.toBlob((pngBlob) => {
-          if (!pngBlob) {
-            console.error('Failed to convert canvas to PNG blob');
-            return;
-          } else {
-            this.saveFile(pngBlob, fileName)
-          }
-        }, 'image/png');
-      };
+        this.loadImgToCanvas(img, title, usePng)
+      }
 
       img.onerror = (err) => {
         console.error('Error loading SVG image:', err);
@@ -99,4 +83,47 @@ export class IoService {
     reader.readAsText(svgBlob);
   }
 
+  private canvasToPng(canvas: HTMLCanvasElement, fileName: string) {
+    canvas.toBlob((pngBlob) => {
+      if (!pngBlob) {
+        console.error('Failed to convert canvas to PNG blob');
+        return;
+      } else {
+        this.saveFile(pngBlob, fileName+'.png')
+      }
+    }, 'image/png');
+  }
+
+  private canvasToJpeg(canvas: HTMLCanvasElement, fileName: string) {
+    canvas.toBlob((jpgBlob) => {
+      if (!jpgBlob) {
+        console.error('Failed to convert canvas to JPEG blob');
+        return;
+      } else {
+        this.saveFile(jpgBlob, fileName+'.jpeg')
+      }
+    }, 'image/jpeg', 1);
+  }
+
+  private loadImgToCanvas(img: HTMLImageElement, fileName: string, usePng=true) {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('Canvas context not available');
+      return;
+    }
+
+    ctx.fillStyle = '#ffffff'; // white
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+
+    if(usePng) {
+      this.canvasToPng(canvas, fileName);
+    } else {
+      this.canvasToJpeg(canvas, fileName);
+    }
+  }
 }
