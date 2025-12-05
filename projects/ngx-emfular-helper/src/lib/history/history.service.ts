@@ -21,9 +21,9 @@ export class HistoryService<T> {
   readonly oldestEntryName: string;
   readonly newestEntryName: string;
   readonly currentEntryName: string;
-  private oldestEntry: number = 0;
-  private newestEntry: number = 0;
-  private currentEntry: number = 0;
+  private oldestEntry: number = -1;
+  private newestEntry: number = -1;
+  private currentEntry: number = -1;
 
   private stateSubject = new BehaviorSubject<T | null>(null);
   state$ = this.stateSubject.asObservable();
