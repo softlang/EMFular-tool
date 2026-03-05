@@ -1,4 +1,6 @@
 import {BehaviorSubject} from "rxjs";
+import {Inject, PLATFORM_ID} from "@angular/core";
+import { isPlatformBrowser } from "@angular/common";
 
 export class HistoryService<T> {
 
@@ -28,12 +30,19 @@ export class HistoryService<T> {
   private stateSubject = new BehaviorSubject<T | null>(null);
   state$ = this.stateSubject.asObservable();
 
-  constructor(prefix: string = 'history_', bufferSize: number = 50) {
+  constructor(
+      prefix: string = 'history_',
+      bufferSize: number = 50,
+      @Inject(PLATFORM_ID) platformId: Object
+  ) {
     this.prefix = prefix;
     this.oldestEntryName = prefix + 'oldestEntry';
     this.newestEntryName = prefix + 'newestEntry';
     this.currentEntryName = prefix + 'currentEntry';
     this.bufferSize = bufferSize;
+    if (isPlatformBrowser(platformId)) {
+      this.init()
+    }
   }
 
   init() {
