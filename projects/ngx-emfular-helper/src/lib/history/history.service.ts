@@ -1,20 +1,11 @@
 import {BehaviorSubject} from "rxjs";
+import {Inject, PLATFORM_ID} from "@angular/core";
+import { isPlatformBrowser } from "@angular/common";
 
 export class HistoryService<T> {
 
   // history in a circular buffer
   //bufferSize entries: entries are 0 to bufferSize-1, -1 is not defined
-
-  //you need to call init after localstorage is ready if you would like to have the history available at app start
-  /* example for instance "KemlHistoryService" that has a fixed prefix and type for T:
-  provideAppInitializer(()=>{
-      const platformId = inject(PLATFORM_ID);
-      if(isPlatformBrowser(platformId)){
-        const history = inject(KemlHistoryService);
-        history.init();
-      }
-    })
-   */
 
   private readonly prefix: string;
   private readonly bufferSize: number;
@@ -28,12 +19,19 @@ export class HistoryService<T> {
   private stateSubject = new BehaviorSubject<T | null>(null);
   state$ = this.stateSubject.asObservable();
 
-  constructor(prefix: string = 'history_', bufferSize: number = 50) {
+  constructor(
+      prefix: string = 'history_',
+      bufferSize: number = 50,
+      @Inject(PLATFORM_ID) platformId: Object
+  ) {
     this.prefix = prefix;
     this.oldestEntryName = prefix + 'oldestEntry';
     this.newestEntryName = prefix + 'newestEntry';
     this.currentEntryName = prefix + 'currentEntry';
     this.bufferSize = bufferSize;
+    if (isPlatformBrowser(platformId)) {
+      this.init()
+    }
   }
 
   init() {
