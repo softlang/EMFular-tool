@@ -1,5 +1,5 @@
 /*
- * Public API Surface of ngx-emfular-helper
+ * Public API Surface of tool
  */
 export * from './lib/history/history.service';
 

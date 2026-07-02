@@ -1,5 +1,5 @@
 {
-  "name": "ngx-emfular-helper",
+  "name": "ngx-emfular-tool",
   "version": "1.0.0",
   "description": "Small Angular library with helper schematics for EMFular, currently alerting, history, and io facilities",
   "keywords": ["EMFular","Angular", "IO", "alert"],
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/softlang/EMFular/tree/main/projects/ngx-emfular-helper"
+    "url": "https://github.com/softlang/EMFular/tree/main/projects/tool"
   },
   "peerDependencies": {
     "@angular/common": "^19.2.0",
