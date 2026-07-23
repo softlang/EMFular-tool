@@ -9,16 +9,38 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/softlang/EMFular/tree/main/projects/tool"
+    "url": "https://github.com/softlang/EMFular-tool"
+  },
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json",
+    "test": "vitest --config vitest.config.ts"
   },
   "peerDependencies": {
-    "@angular/common": "^19.2.0",
-    "@angular/core": "^19.2.0",
-    "@angular/cdk": "^19.2.0",
-    "@angular/material": "^19.2.0"
+    "@angular/cdk": "^19.2.7",
+    "@angular/common": "^19.2.7",
+    "@angular/core": "^19.2.7",
+    "@angular/forms": "^19.2.7",
+    "@types/uuid": "^10.0.0",
+    "@angular/material": "^19.2.7"
   },
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "devDependencies": {
+    "@analogjs/vite-plugin-angular": "^1.19.2",
+    "@angular-devkit/build-angular": "^19.2.25",
+    "@angular/build": "^19.2.25",
+    "@angular/compiler": "^19.2.7",
+    "@angular/platform-browser": "^19.2.7",
+    "@angular/platform-browser-dynamic": "^19.2.7",
+    "@testing-library/dom": "^10.4.1",
+    "@vitest/browser": "^4.1.10",
+    "@vitest/browser-playwright": "^4.1.10",
+    "jsdom": "^29.1.1",
+    "ng-packagr": "^19.2.2",
+    "playwright": "^1.61.1",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
+  }
 }
