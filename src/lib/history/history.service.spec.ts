@@ -1,7 +1,5 @@
 import { HistoryService } from './history.service';
 import { beforeEach, describe, expect, it } from 'vitest';
-import {fakeAsync, tick} from "@angular/core/testing";
-
 
 describe('HistoryService', () => {
   interface HistoryTester {inside: string}
@@ -16,7 +14,7 @@ describe('HistoryService', () => {
     expect(service).toBeTruthy();
   })
 
-  it('should handle saves, undos and redos from a clear cache', fakeAsync(() => {
+  it('should handle saves, undos and redos from a clear cache', () => {
     let emitted: HistoryTester | null = null;
 
     let prefix = "TestHistoryClean_"
@@ -40,14 +38,12 @@ describe('HistoryService', () => {
     service.save({inside: "s1"})
     service.save({inside: "s2"})
 
-    tick();
     expect(emitted).toEqual(null)
     expect(localStorage.getItem(service.oldestEntryName)).toEqual("0")
     expect(localStorage.getItem(service.currentEntryName)).toEqual("2")
     expect(localStorage.getItem(service.newestEntryName)).toEqual("2")
 
     service.undo()
-    tick()
     expect(emitted).not.toBeNull();
     expect((emitted! as HistoryTester).inside).toEqual('s1');
     expect(localStorage.getItem(service.oldestEntryName)).toEqual("0")
@@ -56,7 +52,6 @@ describe('HistoryService', () => {
 
 
     service.undo()
-    tick()
     expect(emitted).not.toBeNull();
     expect((emitted! as HistoryTester).inside).toEqual('s0');
     expect(localStorage.getItem(service.oldestEntryName)).toEqual("0")
@@ -65,7 +60,6 @@ describe('HistoryService', () => {
 
     /* would require an emit even if no op
     service.undo()
-    tick()
     expect(emitted).toBeNull();
     expect(localStorage.getItem(service.oldestEntryName)).toEqual("0")
     expect(localStorage.getItem(service.currentEntryName)).toEqual("0")
@@ -73,7 +67,6 @@ describe('HistoryService', () => {
     */
 
     service.redo()
-    tick()
     expect(emitted).not.toBeNull();
     expect((emitted! as HistoryTester).inside).toEqual('s1');
     expect(localStorage.getItem(service.oldestEntryName)).toEqual("0")
@@ -81,9 +74,9 @@ describe('HistoryService', () => {
     expect(localStorage.getItem(service.newestEntryName)).toEqual("2")
 
 
-  }))
+  })
 
-  it('should remove newer elements when saving in an intermediate situation', fakeAsync(() => {
+  it('should remove newer elements when saving in an intermediate situation', () => {
     let emitted: HistoryTester | null = null;
     let prefix = "TestHistoryIntermediate_"
     let service = new HistoryService<HistoryTester>(prefix, 20);
@@ -98,7 +91,6 @@ describe('HistoryService', () => {
 
     service.undo()
     service.undo()
-    tick()
     expect(emitted!.inside).toEqual("s1")
     expect(localStorage.getItem(service.oldestEntryName)).toEqual("0")
     expect(localStorage.getItem(service.currentEntryName)).toEqual("1")
@@ -114,9 +106,9 @@ describe('HistoryService', () => {
     expect(localStorage.getItem(prefix+"0")).toEqual(JSON.stringify({inside: "s0"}))
     expect(localStorage.getItem(prefix+"3")).toBeNull()
 
-  }));
+  });
 
-  it('should overwrite the oldest entry if buffer is full',  fakeAsync(() => {
+  it('should overwrite the oldest entry if buffer is full', () => {
 
     let prefix = "TestHistoryFull_"
     let service = new HistoryService<HistoryTester>(prefix, 50);
@@ -149,9 +141,9 @@ describe('HistoryService', () => {
     expect(localStorage.getItem(prefix+"1")).toEqual(JSON.stringify({inside: "s51"}))
     expect(localStorage.getItem(prefix+"49")).toEqual(JSON.stringify({inside: "s49"}))
 
-  }));
+  });
 
-  it('should overwrite the oldest entry if buffer is full (size 10)',  fakeAsync(() => {
+  it('should overwrite the oldest entry if buffer is full (size 10)',  () => {
 
     let prefix = "TestHistoryFull10_"
     let service = new HistoryService<HistoryTester>(prefix, 10);
@@ -184,7 +176,7 @@ describe('HistoryService', () => {
     expect(localStorage.getItem(prefix+"1")).toEqual(JSON.stringify({inside: "s11"}))
     expect(localStorage.getItem(prefix+"9")).toEqual(JSON.stringify({inside: "s9"}))
 
-  }));
+  });
 
   it('should decide if a redo is possible', () => {
     let prefix = "TestHistoryRedo_"
