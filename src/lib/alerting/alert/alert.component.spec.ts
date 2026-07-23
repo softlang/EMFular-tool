@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { AlertComponent } from './alert.component';
 import {NO_ERRORS_SCHEMA} from "@angular/core";
@@ -16,12 +17,15 @@ describe('AlertComponent', () => {
         { provide: MatDialogRef, useValue: {} },
       ],
       imports: [MatIcon, AlertComponent]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AlertComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    TestBed.resetTestingModule();
   });
 
   it('should create', () => {
