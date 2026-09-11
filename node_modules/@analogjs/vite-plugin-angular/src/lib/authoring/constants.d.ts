@@ -1,0 +1,26 @@
+export declare const INVALID_METADATA_PROPERTIES: string[];
+export declare const SCRIPT_TAG_REGEX: RegExp;
+export declare const TEMPLATE_TAG_REGEX: RegExp;
+export declare const STYLE_TAG_REGEX: RegExp;
+export declare const FRONTMATTER_REGEX: RegExp;
+export declare const ON_INIT = "onInit";
+export declare const ON_DESTROY = "onDestroy";
+export declare const DEFINE_METADATA = "defineMetadata";
+export declare const ROUTE_META = "routeMeta";
+export declare const INPUT = "input";
+export declare const OUTPUT = "output";
+export declare const OUTPUT_FROM_OBSERVABLE = "outputFromObservable";
+export declare const MODEL = "model";
+export declare const INPUT_REQUIRED = "input.required";
+export declare const VIEW_CHILD = "viewChild";
+export declare const VIEW_CHILD_REQUIRED = "viewChild.required";
+export declare const VIEW_CHILDREN = "viewChildren";
+export declare const CONTENT_CHILD = "contentChild";
+export declare const CONTENT_CHILD_REQUIRED = "contentChild.required";
+export declare const CONTENT_CHILDREN = "contentChildren";
+export declare const HOOKS_MAP: {
+    readonly onInit: "ngOnInit";
+    readonly onDestroy: "ngOnDestroy";
+};
+export declare const SIGNALS_MAP: Record<string, string>;
+export declare const REQUIRED_SIGNALS_MAP: Record<string, string>;

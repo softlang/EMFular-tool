@@ -1,0 +1,45 @@
+import { VERSION } from '@angular/compiler-cli';
+import { createRequire } from 'node:module';
+import * as sfc from './source-file-cache.js';
+const require = createRequire(import.meta.url);
+const angularMajor = Number(VERSION.major);
+const angularMinor = Number(VERSION.minor);
+const angularPatch = Number(VERSION.patch);
+let sourceFileCache;
+let cjt;
+let jt;
+if (angularMajor < 15) {
+    throw new Error('AnalogJS is not compatible with Angular v14 and lower');
+}
+else if (angularMajor >= 15 && angularMajor < 16) {
+    const cp = require('@angular-devkit/build-angular/src/builders/browser-esbuild/compiler-plugin.js');
+    const { createJitResourceTransformer, } = require('@angular-devkit/build-angular/src/builders/browser-esbuild/angular/jit-resource-transformer.js');
+    const { JavaScriptTransformer, } = require('@angular-devkit/build-angular/src/builders/browser-esbuild/javascript-transformer.js');
+    sourceFileCache = cp.SourceFileCache;
+    cjt = createJitResourceTransformer;
+    jt = JavaScriptTransformer;
+}
+else if (angularMajor >= 16 && angularMajor < 18) {
+    const cp = require('@angular-devkit/build-angular/src/tools/esbuild/angular/compiler-plugin.js');
+    const { createJitResourceTransformer, } = require('@angular-devkit/build-angular/src/tools/esbuild/angular/jit-resource-transformer.js');
+    const { JavaScriptTransformer, } = require('@angular-devkit/build-angular/src/tools/esbuild/javascript-transformer.js');
+    /**
+     * Workaround for compatibility with Angular 17.0+
+     */
+    if (typeof cp['SourceFileCache'] !== 'undefined') {
+        sourceFileCache = cp.SourceFileCache;
+    }
+    else {
+        sourceFileCache = sfc.SourceFileCache;
+    }
+    cjt = createJitResourceTransformer;
+    jt = JavaScriptTransformer;
+}
+else {
+    const { createJitResourceTransformer, JavaScriptTransformer, SourceFileCache, } = require('@angular/build/private');
+    sourceFileCache = SourceFileCache;
+    cjt = createJitResourceTransformer;
+    jt = JavaScriptTransformer;
+}
+export { cjt as createJitResourceTransformer, jt as JavaScriptTransformer, sourceFileCache as SourceFileCache, angularMajor, angularMinor, angularPatch, };
+//# sourceMappingURL=devkit.js.map
