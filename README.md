@@ -1,63 +1,93 @@
-# NgxEmfularHelper
+# EMFular-Tool
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.0.
+This project supplies model-agnostic Angular utilities for building EMFular editors.
+In the EMFular megamodel, Tool is the layer for editor functionality that is not part of the model semantics of `EMFular-Core` and not part of the SVG rendering contracts of `EMFular-Diagram`.
+It provides browser-side facilities for history, file input/output, export, input normalization, and alert dialogs.
 
-## Code scaffolding
+## Concepts
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+The EMFular megamodel identifies three Tool concepts: ***Graphical-File Management***, ***JSON-History Management***, and ***JSON-File Management***.
+They map to the code as follows.
 
-```bash
-ng generate component component-name
+### Graphical-File Management
+
+Graphical-file management is implemented by the SVG export part of `IoService`.
+It receives an `SVGElement`, removes Angular runtime artifacts from a cloned SVG, serializes the SVG, and saves it either as SVG directly or as PNG/JPEG through an intermediate canvas.
+
+Code sections:
+
+- `projects/tool/src/lib/io/io.service.ts`: `cleanCopySVGAsBlob`, `saveSVG`, `saveSvgAsPng`, `saveSvgAsJpeg`
+- `projects/tool/src/lib/io/io.service.ts`: private conversion helpers `convertSvgBlobToPngOrJpegAndDownload`, `loadImgToCanvas`, `canvasToPng`, `canvasToJpeg`
+
+```ts
+export class IoService {
+  cleanCopySVGAsBlob(svg: SVGElement): Blob;
+  saveSVG(svgContent: SVGElement, title: string): void;
+  saveSvgAsPng(svgContent: SVGElement, title: string): void;
+  saveSvgAsJpeg(svgContent: SVGElement, title: string): void;
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### JSON-History Management
 
-```bash
-ng generate --help
+JSON-history management is implemented by `HistoryService<T>`.
+The service is generic, but in an EMFular editor it is normally instantiated as `HistoryService<JsonOf<M>>`, so each history entry is the JSON representation of a model state.
+The states are stored in a circular `localStorage` buffer and exposed through `state$` for undo, redo, and session recovery.
+
+Code sections:
+
+- `projects/tool/src/lib/history/history.service.ts`: circular history buffer, `state$`, `save`, `undo`, `redo`, `clearHistory`
+
+```ts
+export class HistoryService<T> {
+  state$: Observable<T | null>;
+
+  constructor(prefix?: string, bufferSize?: number, platformId?: Object);
+
+  clearHistory(): void;
+  save(elem: T): void;
+  undo(): T | null;
+  redo(): T | null;
+  isUndoNotPossible(): boolean;
+  isRedoNotPossible(): boolean;
+}
 ```
 
-## Building
+### JSON-File Management
 
-To build the library, run:
+JSON-file management is split between Tool and Integration.
+Tool provides the browser file primitives in `IoService`: reading a selected file as text and saving a JSON string as a `.json` download.
 
-```bash
-ng build tool
+Code sections:
+
+- `projects/tool/src/lib/io/io.service.ts`: `loadStringFromFile`, `saveJson`, `saveFile`
+
+```ts
+export class IoService {
+  loadStringFromFile(event: Event): Promise<string>;
+  saveFile(contentBlob: Blob, fileName: string): void;
+  saveJson(json: string, title: string): void;
+}
 ```
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
+### Additional Tool Helpers
 
-### Publishing the Library
+The package also exports small helper APIs that are not separate Tool concepts in the megamodel:
 
-Once the project is built, you can publish your library by following these steps:
+- `InputHandler` normalizes browser input events, especially numeric input and repeated file selections.
+- `AlertService` and `AlertComponent` provide a minimal Angular Material message dialog.
 
-1. Navigate to the `dist` directory:
-   ```bash
-   cd dist/tool
-   ```
+## Support
 
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
+Support is currently offered by the main developer, Susanne Göbel under goebel@uni-koblenz.de.
 
-## Running unit tests
+## Contributing
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+We are open to contributors. Maybe you would like to write your bachelor's or master's thesis on EMFular? Read our [arXiv-paper](https://arxiv.org/abs/2606.11442) and get in touch with Susanne Göbel goebel@uni-koblenz.de.
 
-```bash
-ng test
-```
+## License
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+EMFular-diagram is subject to (C) 2026, SoftLang Research Team, University of Koblenz, Faculty of CS, contact Susanne Göbel or Ralf Lämmel.
+It is provided under the ***CC BY 4.0 license***.
+Basically, you are free to share and adapt the material as long as you give proper credit to us and our project.
+Feel free to include EMFular into your research but please cite us.
