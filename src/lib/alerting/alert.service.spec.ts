@@ -7,7 +7,7 @@ describe('AlertService', () => {
   let service: AlertService;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({});
     service = TestBed.inject(AlertService);
   });
 

@@ -8,12 +8,9 @@ import { ComponentPortal } from '@angular/cdk/portal';
 })
 export class AlertService {
 
-  static instance: AlertService;
   constructor(
       private readonly overlay: Overlay
-  ) {
-    AlertService.instance = this;
-  }
+  ) {}
 
   alert(msg: string): void {
     const overlayRef = this.overlay.create({
