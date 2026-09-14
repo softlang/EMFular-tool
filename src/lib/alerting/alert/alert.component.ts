@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-import {MatDialogRef} from "@angular/material/dialog";
-import {MatIcon} from "@angular/material/icon";
+import {OverlayRef} from "@angular/cdk/overlay";
 
 @Component({
   selector: 'alert-component',
-  imports: [
-    MatIcon,
-  ],
+  imports: [],
   templateUrl: './alert.component.html',
   styleUrl: './alert.component.css'
 })
@@ -15,10 +12,10 @@ export class AlertComponent {
   public message!: string;
 
   constructor(
-    public dialogRef: MatDialogRef<AlertComponent>
+      private readonly overlayRef: OverlayRef
   ) {}
 
   closeMe(): void {
-    this.dialogRef.close();
+    this.overlayRef.dispose();
   }
 }
