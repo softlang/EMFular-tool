@@ -38,7 +38,6 @@ describe('AlertService', () => {
   it('creates a separate overlay for each alert', () => {
     const firstRef = createOverlayRef();
     const secondRef = createOverlayRef();
-
     const overlay = {
       create: vi.fn()
           .mockReturnValueOnce(firstRef)
@@ -55,4 +54,16 @@ describe('AlertService', () => {
     expect(secondRef.attach).toHaveBeenCalledTimes(1);
     expect(firstRef).not.toBe(secondRef);
   });
+
+  it('closes the alert when the backdrop is clicked', () => {
+    const overlayRef = createOverlayRef();
+    const overlay = {
+      create: vi.fn(() => overlayRef)
+    } as unknown as Overlay;
+    const service = new AlertService(overlay);
+    service.alert('Hello');
+    const subscribe = overlayRef.backdropClick().subscribe as ReturnType<typeof vi.fn>;
+    expect(subscribe).toHaveBeenCalledTimes(1);
+  });
+  
 });
