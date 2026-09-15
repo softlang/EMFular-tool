@@ -4,18 +4,9 @@ import {afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { IoService } from './io.service';
 
 describe('IoService', () => {
-  let service: IoService;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({});
-    service = TestBed.inject(IoService);
-  });
-
-  afterEach(() => {
-    TestBed.resetTestingModule();
-  });
 
   it('should be created', () => {
+    let service = new IoService();
     expect(service).toBeTruthy();
   });
 });
