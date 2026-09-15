@@ -45,12 +45,12 @@ export class IoService {
 
   saveSvgAsPng(svgContent: SVGElement, title: string) {
     const contentBlob = this.cleanCopySVGAsBlob(svgContent);
-    this.convertSvgBlobToPngOrJpegAndDownload(contentBlob, title, true);
+    this.convertSvgBlobToPngOrJpegAndDownload(contentBlob, title+'.png', true);
   }
 
   saveSvgAsJpeg(svgContent: SVGElement, title: string) {
     const contentBlob = this.cleanCopySVGAsBlob(svgContent);
-    this.convertSvgBlobToPngOrJpegAndDownload(contentBlob, title, false);
+    this.convertSvgBlobToPngOrJpegAndDownload(contentBlob, title+'.jpeg', false);
   }
 
   private convertSvgBlobToPngOrJpegAndDownload(svgBlob: Blob, title: string, usePng?: boolean): void {
