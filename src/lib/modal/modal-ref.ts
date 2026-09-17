@@ -1,8 +1,23 @@
-import {Observable} from 'rxjs';
-import {ComponentRef} from "@angular/core";
+import {Subject} from 'rxjs';
+import {OverlayRef} from "@angular/cdk/overlay";
 
-export interface ModalRef<T, R = void> {
-    componentRef: ComponentRef<T>;
-    close(result?: R): void;
-    closed: Observable<R | undefined>;
+export class ModalRef<R = void> {
+
+    private readonly closedSubject = new Subject<R | undefined>();
+
+    readonly closed = this.closedSubject.asObservable();
+
+    constructor(
+        private readonly overlayRef: OverlayRef
+    ) {}
+
+    close(result?: R): void {
+        if (!this.overlayRef.hasAttached()) {
+            return;
+        }
+
+        this.overlayRef.dispose();
+        this.closedSubject.next(result);
+        this.closedSubject.complete();
+    }
 }

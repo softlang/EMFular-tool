@@ -1,7 +1,8 @@
 /*
  * Public API Surface of tool
  */
-export type {ModalRef} from './lib/modal/modal-ref';
+export * from './lib/modal/modal-ref';
+export type {ModalInstance} from './lib/modal/modal-instance';
 export * from './lib/modal/modal.service';
 
 export * from './lib/history/history.service';

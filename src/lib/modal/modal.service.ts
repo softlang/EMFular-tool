@@ -1,7 +1,8 @@
-import {Injectable, Injector} from "@angular/core";
-import {Overlay, OverlayConfig, OverlayRef} from "@angular/cdk/overlay";
+import {Injectable} from "@angular/core";
+import {Overlay, OverlayConfig} from "@angular/cdk/overlay";
 import {ComponentPortal, ComponentType} from "@angular/cdk/portal";
 import {ModalRef} from "./modal-ref";
+import {ModalInstance} from "./modal-instance";
 
 @Injectable({
     providedIn: 'root'
@@ -10,30 +11,21 @@ export class ModalService {
 
     constructor(
         private readonly overlay: Overlay,
-        private readonly injector: Injector
     ) {}
 
-    createClosableModal<T>(component: ComponentType<T>, config: OverlayConfig): ModalRef<T> {
-        const overlayRef = this.overlay.create(config)
-        const injector = Injector.create({
-            providers: [
-                {
-                    provide: OverlayRef,
-                    useValue: overlayRef
-                }
-            ],
-            parent: this.injector
-        });
-        const componentRef = overlayRef.attach<T>(
-            new ComponentPortal(component, null, injector))
+    createModal<T, R = void>(
+        component: ComponentType<T>,
+        config: OverlayConfig
+    ): ModalInstance<T, R> {
+        const overlayRef = this.overlay.create(config);
+        const ref = new ModalRef<R>(overlayRef);
         overlayRef.backdropClick().subscribe(() => {
-            overlayRef.dispose();
+            ref.close();
         });
-        return {
-            componentRef: componentRef,
-            close: () => overlayRef.dispose(),
-            closed: overlayRef.detachments()
-        };
-    }
 
+        const componentRef = overlayRef.attach(
+            new ComponentPortal(component)
+        );
+        return { ref, componentRef };
+    }
 }
