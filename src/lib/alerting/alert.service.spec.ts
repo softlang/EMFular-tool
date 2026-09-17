@@ -1,81 +1,64 @@
-import { ComponentRef } from '@angular/core';
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { describe, expect, it, vi } from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
 
-import { AlertService } from './alert.service';
-import { AlertComponent } from './alert/alert.component';
+import {AlertService} from './alert.service';
+import {AlertComponent} from './alert/alert.component';
+import {ModalService} from '../modal/modal.service';
+import {ModalInstance} from '../modal/modal-instance';
+import {ModalRef} from '../modal/modal-ref';
 
 describe('AlertService', () => {
 
-  function createOverlayRef() {
-    const componentRef = {
-      instance: {} as AlertComponent
-    } as ComponentRef<AlertComponent>;
-    const overlayRef = {
-      attach: vi.fn(() => componentRef),
-      backdropClick: vi.fn(() => ({
-        subscribe: vi.fn()
-      })),
-      dispose: vi.fn()
-    } as unknown as OverlayRef;
-    return { overlayRef, componentRef };
+  function createModalInstance(): ModalInstance<AlertComponent, void> {
+    return {
+      ref: {} as ModalRef<void>,
+      componentRef: {
+        instance: {} as AlertComponent
+      } as any
+    };
   }
 
-  it('creates an alert', () => {
-    const { overlayRef, componentRef } = createOverlayRef();
-    const overlay = {
-      create: vi.fn(() => overlayRef)
-    } as unknown as Overlay;
-    const service = new AlertService(overlay);
+  it('creates an alert with the given message', () => {
+    const modalInstance = createModalInstance();
+    const modalService = {
+      createModal: vi.fn(() => modalInstance)
+    } as unknown as ModalService;
 
+    const service = new AlertService(modalService);
     service.alert('Hello');
-    expect(overlay.create).toHaveBeenCalledTimes(1);
-    expect(overlayRef.attach).toHaveBeenCalledTimes(1);
-    expect(componentRef.instance.message).toBe('Hello');
+    expect(modalService.createModal).toHaveBeenCalledWith(
+        AlertComponent,
+        {
+          width: '20%',
+          height: '30%',
+          hasBackdrop: true,
+          backdropClass: 'cdk-overlay-dark-backdrop',
+          panelClass: 'alert-overlay'
+        }
+    );
+    expect(modalInstance.componentRef.instance.message)
+        .toBe('Hello');
   });
 
-  it('creates a separate overlay for each alert', () => {
-    const first = createOverlayRef();
-    const second = createOverlayRef();
-    const overlay = {
-      create: vi.fn()
-          .mockReturnValueOnce(first.overlayRef)
-          .mockReturnValueOnce(second.overlayRef)
-    } as unknown as Overlay;
-    const service = new AlertService(overlay);
+  it('creates a separate modal for each alert', () => {
+    const first = createModalInstance();
+    const second = createModalInstance();
 
+    const modalService = {
+      createModal: vi.fn()
+          .mockReturnValueOnce(first)
+          .mockReturnValueOnce(second)
+    } as unknown as ModalService;
+
+    const service = new AlertService(modalService);
     service.alert('First');
     service.alert('Second');
-    expect(overlay.create).toHaveBeenCalledTimes(2);
-    expect(first.overlayRef.attach).toHaveBeenCalledTimes(1);
-    expect(second.overlayRef.attach).toHaveBeenCalledTimes(1);
-    expect(first.overlayRef).not.toBe(second.overlayRef);
-    expect(first.componentRef.instance.message).toBe('First');
-    expect(second.componentRef.instance.message).toBe('Second');
+
+    expect(modalService.createModal).toHaveBeenCalledTimes(2);
+    expect(first.componentRef.instance.message)
+        .toBe('First');
+    expect(second.componentRef.instance.message)
+        .toBe('Second');
+    expect(first).not.toBe(second);
   });
 
-  it('closes the alert when the backdrop is clicked', () => {
-    const overlayRef = {
-      attach: vi.fn(() => ({
-        instance: {} as AlertComponent
-      } as ComponentRef<AlertComponent>)),
-      backdropClick: vi.fn(),
-      dispose: vi.fn()
-    } as unknown as OverlayRef;
-    const overlay = {
-      create: vi.fn(() => overlayRef)
-    } as unknown as Overlay;
-    let backdropClickHandler!: () => void;
-    vi.mocked(overlayRef.backdropClick).mockReturnValue({
-      subscribe: vi.fn((handler: () => void) => {
-        backdropClickHandler = handler;
-      })
-    } as any);
-    const service = new AlertService(overlay);
-
-    service.alert('Hello');
-    expect(overlayRef.dispose).not.toHaveBeenCalled();
-    backdropClickHandler();
-    expect(overlayRef.dispose).toHaveBeenCalledTimes(1);
-  });
 });
