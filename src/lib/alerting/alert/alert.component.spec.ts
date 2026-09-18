@@ -1,22 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AlertComponent } from './alert.component';
-import {NO_ERRORS_SCHEMA} from "@angular/core";
-import {MatDialogRef} from "@angular/material/dialog";
-import {MatIcon} from "@angular/material/icon";
+import { OverlayRef } from '@angular/cdk/overlay';
 
 describe('AlertComponent', () => {
   let component: AlertComponent;
   let fixture: ComponentFixture<AlertComponent>;
+  let overlayRef: OverlayRef;
 
   beforeEach(async () => {
+    overlayRef = {
+      dispose: vi.fn()
+    } as unknown as OverlayRef;
+
     await TestBed.configureTestingModule({
-      schemas: [NO_ERRORS_SCHEMA],
+      imports: [AlertComponent],
       providers: [
-        { provide: MatDialogRef, useValue: {} },
-      ],
-      imports: [MatIcon, AlertComponent]
+        { provide: OverlayRef, useValue: overlayRef }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AlertComponent);
@@ -30,5 +32,10 @@ describe('AlertComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('closes the overlay', () => {
+    component.closeMe();
+    expect(overlayRef.dispose).toHaveBeenCalled();
   });
 });

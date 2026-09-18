@@ -75,7 +75,7 @@ export class IoService {
 The package also exports small helper APIs that are not separate Tool concepts in the megamodel:
 
 - `InputHandler` normalizes browser input events, especially numeric input and repeated file selections.
-- `AlertService` and `AlertComponent` provide a minimal Angular Material message dialog.
+- `AlertService` and `AlertComponent` provide a minimal CDK-based alerting via pop-ups.
 
 ## Support
 
