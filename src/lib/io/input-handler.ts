@@ -9,7 +9,7 @@ export class InputHandler {
 
   // this needs to be called on all input elements to allow them to accept the same value twice
   static clearElem(event: Event) {
-    let target = event.target as HTMLInputElement;
+    const target = event.target as HTMLInputElement;
     target.value = ''
   }
 }
