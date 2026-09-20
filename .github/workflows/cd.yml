@@ -58,6 +58,7 @@ jobs:
           echo "Versions match: $VERSION"
 
       - name: Publish
+        working-directory: dist
         run: npm publish --provenance --access public
 
       - name: Create GitHub Release
