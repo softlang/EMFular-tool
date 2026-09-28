@@ -4,51 +4,29 @@ import {ModalRef} from './modal-ref';
 
 describe('ModalRef', () => {
 
-    it('closes the overlay', () => {
-        const overlayRef = {
-            hasAttached: vi.fn().mockReturnValue(true),
-            dispose: vi.fn()
-        } as unknown as OverlayRef;
-
-        const ref = new ModalRef(overlayRef);
-
-        ref.close();
-
-        expect(overlayRef.dispose).toHaveBeenCalledOnce();
-    });
-
     it('emits the result when closed', () => {
         const overlayRef = {
             hasAttached: vi.fn().mockReturnValue(true),
             dispose: vi.fn()
         } as unknown as OverlayRef;
-
         const ref = new ModalRef<string>(overlayRef);
-
         let result: string | undefined;
-
         ref.closed.subscribe(value => result = value);
-
         ref.close('hello');
-
         expect(result).toBe('hello');
     });
 
-    it('emits undefined when closed without a result', () => {
+    it('emits nothing when closed without a result', () => {
         const overlayRef = {
             hasAttached: vi.fn().mockReturnValue(true),
             dispose: vi.fn()
         } as unknown as OverlayRef;
-
         const ref = new ModalRef<string>(overlayRef);
-
         let result: string | undefined = 'initial';
-
         ref.closed.subscribe(value => result = value);
-
         ref.close();
-
-        expect(result).toBeUndefined();
+        expect(overlayRef.dispose).toHaveBeenCalledOnce();
+        expect(result).toEqual('initial');
     });
 
     it('completes closed when closed', () => {
@@ -56,17 +34,12 @@ describe('ModalRef', () => {
             hasAttached: vi.fn().mockReturnValue(true),
             dispose: vi.fn()
         } as unknown as OverlayRef;
-
         const ref = new ModalRef(overlayRef);
-
         let completed = false;
-
         ref.closed.subscribe({
             complete: () => completed = true
         });
-
         ref.close();
-
         expect(completed).toBe(true);
     });
 
@@ -75,15 +48,10 @@ describe('ModalRef', () => {
             hasAttached: vi.fn().mockReturnValue(false),
             dispose: vi.fn()
         } as unknown as OverlayRef;
-
         const ref = new ModalRef(overlayRef);
-
         let emitted = false;
-
         ref.closed.subscribe(() => emitted = true);
-
         ref.close();
-
         expect(overlayRef.dispose).not.toHaveBeenCalled();
         expect(emitted).toBe(false);
     });
@@ -93,17 +61,13 @@ describe('ModalRef', () => {
             hasAttached: vi.fn().mockReturnValue(true),
             dispose: vi.fn()
         } as unknown as OverlayRef;
-
         // After dispose(), simulate the overlay no longer being attached.
         overlayRef.hasAttached
             .mockReturnValueOnce(true)
             .mockReturnValueOnce(false);
-
-        const ref = new ModalRef(overlayRef);
-
+        const ref: ModalRef<string> = new ModalRef(overlayRef);
         ref.close('first');
         ref.close('second');
-
         expect(overlayRef.dispose).toHaveBeenCalledOnce();
     });
 

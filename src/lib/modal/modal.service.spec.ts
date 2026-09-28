@@ -54,18 +54,18 @@ describe('ModalService', () => {
         expect(result).toBe('hello');
     });
 
-    it('emits undefined when the modal is closed without a result', () => {
+    it('emits nothing when the modal is closed without a result', () => {
         const instance = service.createModal<
             TestModalComponent,
             string
         >(TestModalComponent, {});
 
-        let result: string | undefined = 'not-closed';
+        let result: string = 'not-closed';
         instance.ref.closed.subscribe(value => {
             result = value;
         });
         instance.ref.close();
-        expect(result).toBeUndefined();
+        expect(result).toEqual('not-closed');
     });
 
     it('closes without a result when the backdrop is clicked', () => {
@@ -86,7 +86,7 @@ describe('ModalService', () => {
 
         expect(backdrop).not.toBeNull();
         backdrop.click();
-        expect(result).toBeUndefined();
+        expect(result).toEqual('not-closed');
     });
 
 });
