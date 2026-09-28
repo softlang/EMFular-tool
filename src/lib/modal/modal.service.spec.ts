@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {describe, expect, it, beforeEach, afterEach} from 'vitest';
+import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
+import {describe, expect, it, beforeEach, afterEach, vi} from 'vitest';
 import {ModalService} from './modal.service';
 
 @Component({
@@ -12,6 +12,7 @@ class TestModalComponent {}
 describe('ModalService', () => {
 
     let service: ModalService;
+    let overlay: Overlay;
     let overlayContainer: OverlayContainer;
     let overlayElement: HTMLElement;
 
@@ -21,6 +22,7 @@ describe('ModalService', () => {
         });
 
         service = TestBed.inject(ModalService);
+        overlay = TestBed.inject(Overlay);
         overlayContainer = TestBed.inject(OverlayContainer);
         overlayElement = overlayContainer.getContainerElement();
     });
@@ -89,4 +91,30 @@ describe('ModalService', () => {
         expect(result).toEqual('not-closed');
     });
 
+    it('uses the explicitly given position strategy', () => {
+        const positionStrategy = overlay.position()
+            .global()
+            .top('10px');
+        const createSpy = vi.spyOn(overlay, 'create');
+        const instance = service.createModal(TestModalComponent, {
+            positionStrategy
+        });
+        expect(createSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                positionStrategy
+            })
+        );
+        instance.ref.close();
+    });
+
+    it('uses the centered position strategy by default', () => {
+        const createSpy = vi.spyOn(overlay, 'create');
+        const instance = service.createModal(TestModalComponent, {});
+        expect(createSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                positionStrategy: service['defaultStrategyCentered']
+            })
+        );
+        instance.ref.close();
+    });
 });
