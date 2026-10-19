@@ -3,8 +3,7 @@ import {OverlayRef} from "@angular/cdk/overlay";
 
 export class ModalRef<R = void> {
 
-    private readonly closedSubject = new Subject<R | undefined>();
-
+    private readonly closedSubject = new Subject<R>();
     readonly closed = this.closedSubject.asObservable();
 
     constructor(
@@ -15,9 +14,10 @@ export class ModalRef<R = void> {
         if (!this.overlayRef.hasAttached()) {
             return;
         }
-
         this.overlayRef.dispose();
-        this.closedSubject.next(result);
+        if (result !== undefined) {
+            this.closedSubject.next(result);
+        }
         this.closedSubject.complete();
     }
 }
