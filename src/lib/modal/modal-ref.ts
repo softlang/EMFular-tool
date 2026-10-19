@@ -15,7 +15,7 @@ export class ModalRef<R = void> {
             return;
         }
         this.overlayRef.dispose();
-        if (result) {
+        if (result !== undefined) {
             this.closedSubject.next(result);
         }
         this.closedSubject.complete();
