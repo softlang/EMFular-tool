@@ -16,6 +16,18 @@ describe('ModalRef', () => {
         expect(result).toBe('hello');
     });
 
+
+    it('emits a falsly result when closed', () => {
+        const overlayRef = {
+            hasAttached: vi.fn().mockReturnValue(true),
+            dispose: vi.fn()
+        } as unknown as OverlayRef;
+        const ref = new ModalRef<boolean>(overlayRef);
+        let result: boolean | undefined = undefined;
+        ref.closed.subscribe(value => result = value);
+        ref.close(false);
+        expect(result).toBe(false);
+    });
     it('emits nothing when closed without a result', () => {
         const overlayRef = {
             hasAttached: vi.fn().mockReturnValue(true),
